@@ -23,23 +23,23 @@ from optparse import OptionParser
 
 kamstrup_382_var = {
 
-    0x0001: "Energy-in",
-    0x0002: "Energy-out",
+    0x0001: "Energy-in-low-res",
+    0x0002: "Energy-out-low-res",
 
-    0x000d: "Energy-in-hi-res",
-    0x000e: "Energy-out-hi-res",
+    0x000d: "Ap",
+    0x000e: "Am",
 
-    0x041e: "Voltage-p1",
-    0x041f: "Voltage-p2",
-    0x0420: "Voltage-p3",
+    0x041e: "U1",
+    0x041f: "U2",
+    0x0420: "U3",
 
-    0x0434: "Current-p1",
-    0x0435: "Current-p2",
-    0x0436: "Current-p3",
+    0x0434: "I1",
+    0x0435: "I2",
+    0x0436: "I3",
 
-    0x0438: "Power-p1",
-    0x0439: "Power-p2",
-    0x043a: "Power-p3",
+    0x0438: "P1",
+    0x0439: "P2",
+    0x043a: "P3",
 }
 
 
