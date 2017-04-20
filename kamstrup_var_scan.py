@@ -256,7 +256,7 @@ if __name__ == "__main__":
 
     foo = kamstrup(serial_port=options.serial_port)
 
-    for i in range(0xfff):
+    for i in range(0x0001,0xffff):
         time.sleep(0.005)
 
         x,u = foo.readvar(i)
