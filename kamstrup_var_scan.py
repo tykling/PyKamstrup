@@ -258,6 +258,9 @@ if __name__ == "__main__":
 
     for i in range(0x0001,0xffff):
         time.sleep(0.005)
+        try:
+            x,u = foo.readvar(i)
+            print(i, x, u)
+        except IndexError:
+            continue
 
-        x,u = foo.readvar(i)
-        print(i, x, u)
