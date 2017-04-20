@@ -260,4 +260,4 @@ if __name__ == "__main__":
         time.sleep(0.005)
 
         x,u = foo.readvar(i)
-        print(j, x, u)
+        print(i, x, u)
