@@ -40,8 +40,47 @@ kamstrup_382_var = {
     0x0438: "P1",
     0x0439: "P2",
     0x043a: "P3",
+    #0x03e9: 'Meter-serialnumber',  # not user configurable
+    #0x0033:  'Meter-number',        # user configurable
+    #0x04f4: 'M-bus-address',
 }
 
+kamstrup_162J_var = {
+
+    0x0001: "Energy-in-low-res",
+    0x0002: "Energy-out-low-res",
+
+    0x000d: "Ap",
+    0x000e: "Am",
+
+    0x041e: "U1",
+
+    0x0434: "I1",
+
+    0x0438: "P1",
+
+}
+
+kamstrup_362J_var = {
+
+    0x0001: "Energy-in-low-res",
+    0x0002: "Energy-out-low-res",
+
+    0x000d: "Ap",
+    0x000e: "Am",
+
+    0x041e: "U1",
+    0x041f: "U2",
+    0x0420: "U3",
+
+    0x0434: "I1",
+    0x0435: "I2",
+    0x0436: "I3",
+
+    0x0438: "P1",
+    0x0439: "P2",
+    0x043a: "P3",
+}
 
 #######################################################################
 # Units, provided by Erik Jensen
@@ -243,6 +282,7 @@ class kamstrup(object):
 if __name__ == "__main__":
 
     import time
+    import datetime
 
     parser = OptionParser()
     parser.add_option(
@@ -251,11 +291,32 @@ if __name__ == "__main__":
         help="Specify serial device path.",
         metavar="SERIAL_PORT",
         default="/dev/ttyUSB0",
+        type="string",
+    )
+    parser.add_option(
+        "-m", "--meter_type",
+        dest="meter_type",
+        help="Specify Kamstrup meter type.",
+        metavar="METER_TYPE",
+        default="162J",
+        choices=["162J","362J","382",],
+        type="string",
     )
     (options, args) = parser.parse_args()
 
     foo = kamstrup(serial_port=options.serial_port)
 
-    for i in kamstrup_382_var:
+    meter_type_str=options.meter_type
+
+    if meter_type_str is "162J":
+        meter_type_var=kamstrup_162J_var
+    elif meter_type_str is "362J":
+        meter_type_var=kamstrup_362J_var
+    elif meter_type_str is "382":
+        meter_type_var=kamstrup_382_var
+
+    for i in meter_type_var:
         x,u = foo.readvar(i)
+        print("%-25s"%"Time",time.strftime("%H:%M:%S"),"Time")
+        print("%-25s"%"Date",datetime.today().strftime("%d/%m/%Y"),"Date")
         print("%-25s" % kamstrup_382_var[i], x, u)
