@@ -40,7 +40,7 @@ kamstrup_382_var = {
     0x0438: "P1",
     0x0439: "P2",
     0x043a: "P3",
-    #0x03e9: 'Meter-serialnumber',  # not user configurable
+    0x03e9: 'Meter-serialnumber',  # not user configurable
     #0x0033:  'Meter-number',        # user configurable
     #0x04f4: 'M-bus-address',
 }
@@ -58,7 +58,7 @@ kamstrup_162J_var = {
     0x0434: "I1",
 
     0x0438: "P1",
-
+    0x03e9: 'Meter-serialnumber',
 }
 
 kamstrup_362J_var = {
@@ -80,6 +80,7 @@ kamstrup_362J_var = {
     0x0438: "P1",
     0x0439: "P2",
     0x043a: "P3",
+    0x03e9: 'Meter-serialnumber',
 }
 
 #######################################################################
@@ -300,23 +301,25 @@ if __name__ == "__main__":
         metavar="METER_TYPE",
         default="162J",
         choices=["162J","362J","382",],
-        type="string",
     )
     (options, args) = parser.parse_args()
 
     foo = kamstrup(serial_port=options.serial_port)
 
-    meter_type_str=options.meter_type
+    meter_type_str=str(options.meter_type)
 
-    if meter_type_str is "162J":
+    if meter_type_str in "162J":
         meter_type_var=kamstrup_162J_var
-    elif meter_type_str is "362J":
+    elif meter_type_str in "362J":
         meter_type_var=kamstrup_362J_var
-    elif meter_type_str is "382":
+    elif meter_type_str in "382":
         meter_type_var=kamstrup_382_var
+    else:
+        raise ValueError("ERROR: Meter type not defined!")
+        
 
+    print("%-25s"%"Time",time.strftime("%H:%M:%S"),"Time")
+    print("%-25s"%"Date",datetime.date.today().strftime("%m/%d/%Y"),"Date")
     for i in meter_type_var:
         x,u = foo.readvar(i)
-        print("%-25s"%"Time",time.strftime("%H:%M:%S"),"Time")
-        print("%-25s"%"Date",datetime.today().strftime("%d/%m/%Y"),"Date")
         print("%-25s" % kamstrup_382_var[i], x, u)
