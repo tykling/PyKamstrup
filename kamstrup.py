@@ -316,10 +316,10 @@ if __name__ == "__main__":
         meter_type_var=kamstrup_382_var
     else:
         raise ValueError("ERROR: Meter type not defined!")
-        
+
 
     print("%-25s"%"Time",time.strftime("%H:%M:%S"),"Time")
     print("%-25s"%"Date",datetime.date.today().strftime("%m/%d/%Y"),"Date")
     for i in meter_type_var:
         x,u = foo.readvar(i)
-        print("%-25s" % kamstrup_382_var[i], x, u)
+        print("%-25s" % meter_type_var[i], x, u)
