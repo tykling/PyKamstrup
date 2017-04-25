@@ -239,10 +239,17 @@ class kamstrup(object):
 
         return (x, u)
 
+def float_to_hex(f):
+    return hex(struct.unpack('<I', struct.pack('<f', f))[0])
+
+def double_to_hex(f):
+    return hex(struct.unpack('<Q', struct.pack('<d', f))[0])
+
 
 if __name__ == "__main__":
 
     import time
+    import struct
 
     parser = OptionParser()
     parser.add_option(
@@ -252,15 +259,31 @@ if __name__ == "__main__":
         metavar="SERIAL_PORT",
         default="/dev/ttyUSB0",
     )
+    parser.add_option(
+        "-v","--var",
+        dest="vars",
+	action="append",
+    )
     (options, args) = parser.parse_args()
 
     foo = kamstrup(serial_port=options.serial_port)
 
-    for i in range(0x0001,0xffff):
+    if options.vars is not None:
+        vars=[]
+	for var in options.vars:
+	    vars.append(int(var))	
+    else:
+        vars=range(0x0001,0xffff)
+
+    for i in vars:
         time.sleep(0.005)
         try:
             x,u = foo.readvar(i)
+	    
             print(i, x, u)
+	    if u is 'ASCII' or u is 'RTC':
+	        print(i,float_to_hex(x),u)
+		
         except IndexError:
             continue
 
