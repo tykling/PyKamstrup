@@ -1,4 +1,4 @@
-This is a modified version of PyKamstrup by bsdphk. It has some small modifications so you can pass serial port and meter type on command line. Some additional registers have also been identified. It has been tested against 162J and 362J.
+This is a modified version of PyKamstrup by bsdphk. It has some small modifications so you can pass serial port and meter type on command line. Some additional registers have also been identified. It has been tested on the Kamstrup 162J and 362J electricity meters in addition to the 382 used in the original.
 
 The original README is retained below.
 
