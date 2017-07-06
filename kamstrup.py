@@ -322,4 +322,8 @@ if __name__ == "__main__":
     print("%-25s"%"Date",datetime.date.today().strftime("%m/%d/%Y"),"Date")
     for i in meter_type_var:
         x,u = foo.readvar(i)
-        print("%-25s" % meter_type_var[i], x, u)
+        mtv=meter_type_var[i]
+        if 'I1' in mtv or 'I2' in mtv or 'I3' in mtv:
+                print("%-25s" % meter_type_var[i], x*1000, 'mA')
+        else:
+                print("%-25s" % meter_type_var[i], x, u)
