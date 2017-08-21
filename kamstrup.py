@@ -15,6 +15,10 @@ import serial
 
 import math
 
+import logging
+logger=logging
+logging.basicConfig(filename='/tmp/kamstrup.log',level=logging.ERROR)
+
 from optparse import OptionParser
 
 #######################################################################
@@ -138,8 +142,7 @@ escapes = {
 class kamstrup(object):
 
     def __init__(self, serial_port = "/dev/ttyUSB0"):
-        self.debug_fd = open("/tmp/_kamstrup", "a")
-        self.debug_fd.write("\n\nStart\n")
+        logger.debug("\n\nStart\n")
         self.debug_id = None
 
         self.ser = serial.Serial(
@@ -151,18 +154,16 @@ class kamstrup(object):
         for i in b:
             if dir != self.debug_id:
                 if self.debug_id != None:
-                    self.debug_fd.write("\n")
-                self.debug_fd.write(dir + "\t")
+                    logger.debug("\n")
+                logger.debug(dir + "\t")
                 self.debug_id = dir
-            self.debug_fd.write(" %02x " % i)
-        self.debug_fd.flush()
+            logger.debug(" %02x " % i)
 
     def debug_msg(self, msg):
         if self.debug_id != None:
-            self.debug_fd.write("\n")
+            logger.debug("\n")
         self.debug_id = "Msg"
-        self.debug_fd.write("Msg\t" + msg)
-        self.debug_fd.flush()
+        logger.debug("Msg\t" + msg)
 
     def wr(self, b):
         b = bytearray(b)
