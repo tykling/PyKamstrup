@@ -87,6 +87,58 @@ kamstrup_362J_var = {
     0x03e9: 'Meter-serialnumber',
 }
 
+kamstrup_684_var = {
+    0x0032: "unknown",
+    0x0033: "unknown",
+    0x0034: "unknown",
+    0x0035: "unknown",
+    0x03e9: "unknown",
+    0x03f2: "unknown",
+    0x0406: "unknown",
+    0x0417: "unknown",
+    0x043b: "unknown",
+    0x0466: "unknown",
+    0x04c5: "unknown",
+    0x04db: "unknown",
+    0x0620: "unknown",
+    0x062b: "unknown",
+    0x178a: "unknown",
+    0x178f: "unknown",
+    0x180d: "unknown",
+    0x180e: "unknown",
+    0x1824: "unknown",
+    0x1845: "unknown",
+    0x1867: "unknown",
+    0x186c: "unknown",
+    0x1874: "unknown",
+    0x1875: "unknown",
+    0x1876: "unknown",
+    0x1880: "unknown",
+    0x1885: "unknown",
+    0x1886: "unknown",
+    0x1887: "unknown",
+    0x1888: "unknown",
+    0x1889: "unknown",
+    0x188a: "unknown",
+    0x188b: "unknown",
+    0x188c: "unknown",
+    0x188d: "unknown",
+    0x188e: "unknown",
+    0x188f: "unknown",
+    0x1890: "unknown",
+    0x1893: "unknown",
+    0x1894: "unknown",
+    0x18a0: "unknown",
+    0x18ad: "unknown",
+    0x18ae: "unknown",
+    0x18af: "unknown",
+    0x18b0: "unknown",
+    0x18b1: "unknown",
+    0x18b2: "unknown",
+    0x18b3: "unknown",
+    0x18b4: "unknown",
+}
+
 #######################################################################
 # Units, provided by Erik Jensen
 
@@ -301,7 +353,7 @@ if __name__ == "__main__":
         help="Specify Kamstrup meter type.",
         metavar="METER_TYPE",
         default="162J",
-        choices=["162J","362J","382",],
+        choices=["162J","362J","382","684"],
     )
     (options, args) = parser.parse_args()
 
@@ -315,6 +367,8 @@ if __name__ == "__main__":
         meter_type_var=kamstrup_362J_var
     elif meter_type_str in "382":
         meter_type_var=kamstrup_382_var
+    elif meter_type_str in "684":
+        meter_type_var=kamstrup_684_var
     else:
         raise ValueError("ERROR: Meter type not defined!")
 
