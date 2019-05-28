@@ -262,7 +262,7 @@ if __name__ == "__main__":
     parser.add_option(
         "-v","--var",
         dest="vars",
-	action="append",
+        action="append",
     )
     (options, args) = parser.parse_args()
 
@@ -270,8 +270,8 @@ if __name__ == "__main__":
 
     if options.vars is not None:
         vars=[]
-	for var in options.vars:
-	    vars.append(int(var))	
+        for var in options.vars:
+            vars.append(int(var))
     else:
         vars=range(0x0001,0xffff)
 
@@ -279,11 +279,11 @@ if __name__ == "__main__":
         time.sleep(0.005)
         try:
             x,u = foo.readvar(i)
-	    
+
             print(i, x, u)
-	    if u is 'ASCII' or u is 'RTC':
-	        print(i,float_to_hex(x),u)
-		
+            if u is 'ASCII' or u is 'RTC':
+                print(i,float_to_hex(x),u)
+
         except IndexError:
             continue
 
