@@ -316,7 +316,7 @@ class kamstrup(object):
             i = -i
         x *= i
 
-        if False:
+        if True:
             # Debug print
             s = ""
             for i in b[:4]:
@@ -382,7 +382,7 @@ if __name__ == "__main__":
         x,u = foo.readvar(i)
         mtv=meter_type_var[i]
         if 'I1' in mtv or 'I2' in mtv or 'I3' in mtv:
-                print(i, "%-25s" % meter_type_var[i], x*1000, 'mA')
+                print(hex(i), "%-25s" % meter_type_var[i], x*1000, 'mA')
         else:
-                print(i, "%-25s" % meter_type_var[i], x, u)
+                print(hex(i), "%-25s" % meter_type_var[i], x, u)
 
