@@ -325,10 +325,13 @@ class kamstrup(object):
             for i in b[4:7]:
                 s += " %02x" % i
             s += " |"
+            s2 = ""
             for i in b[7:]:
                 s += " %02x" % i
-
+                s2 += " %02x" % i
             print(s, "=", x, units[b[4]])
+            if u=="ASCII":
+                print(bytearray.fromhex(s2).decode('ascii'))
 
         return (x, u)
 
@@ -379,6 +382,7 @@ if __name__ == "__main__":
         x,u = foo.readvar(i)
         mtv=meter_type_var[i]
         if 'I1' in mtv or 'I2' in mtv or 'I3' in mtv:
-                print("%-25s" % meter_type_var[i], x*1000, 'mA')
+                print(i, "%-25s" % meter_type_var[i], x*1000, 'mA')
         else:
-                print("%-25s" % meter_type_var[i], x, u)
+                print(i, "%-25s" % meter_type_var[i], x, u)
+
