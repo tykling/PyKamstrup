@@ -385,4 +385,5 @@ if __name__ == "__main__":
                 print(hex(i), "%-25s" % meter_type_var[i], x*1000, 'mA')
         else:
                 print(hex(i), "%-25s" % meter_type_var[i], x, u)
+        print("----------------------------")
 
