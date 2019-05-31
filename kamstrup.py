@@ -17,7 +17,7 @@ import math
 
 import logging
 logger=logging
-logging.basicConfig(filename='/tmp/kamstrup.log',level=logging.DEBUG)
+#logging.basicConfig(filename='/tmp/kamstrup.log',level=logging.DEBUG)
 
 from optparse import OptionParser
 
@@ -221,7 +221,7 @@ class kamstrup(object):
             if self.debug_id != None:
                 self.debug_fd.write("\n")
                 self.debug_fd.write(direction + "\t")
-                self.debug_id = dir
+            self.debug_id = direction
         # loop over the bytes and output each as HEX
         for i in b:
             self.debug_fd.write(" %02x " % i)
