@@ -17,7 +17,7 @@ import math
 
 import logging
 logger=logging
-logging.basicConfig(filename='/tmp/kamstrup.log',level=logging.ERROR)
+logging.basicConfig(filename='/tmp/kamstrup.log',level=logging.DEBUG)
 
 from optparse import OptionParser
 
@@ -88,55 +88,61 @@ kamstrup_362J_var = {
 }
 
 kamstrup_684_var = {
-    0x0032: "unknown",
-    0x0033: "unknown",
-    0x0034: "unknown",
-    0x0035: "unknown",
-    0x03e9: "unknown",
-    0x03f2: "unknown",
-    0x0406: "unknown",
-    0x0417: "unknown",
-    0x043b: "unknown",
-    0x0466: "Model",
-    0x04c5: "unknown",
-    0x04db: "unknown",
-    0x0620: "unknown",
-    0x062b: "unknown",
-    0x178a: "unknown",
-    0x178f: "unknown",
-    0x180d: "unknown",
-    0x180e: "unknown",
-    0x1824: "unknown",
-    0x1845: "unknown",
-    0x1867: "System Title",
-    0x186c: "unknown",
-    0x1874: "unknown",
-    0x1875: "unknown",
-    0x1876: "unknown",
-    0x1880: "unknown",
-    0x1885: "unknown",
-    0x1886: "unknown",
-    0x1887: "unknown",
-    0x1888: "unknown",
-    0x1889: "unknown",
-    0x188a: "unknown",
-    0x188b: "unknown",
-    0x188c: "unknown",
-    0x188d: "unknown",
-    0x188e: "unknown",
-    0x188f: "unknown",
-    0x1890: "unknown",
-    0x1893: "unknown",
-    0x1894: "unknown",
-    0x18a0: "unknown",
-    0x18ad: "unknown",
-    0x18ae: "unknown",
-    0x18af: "unknown",
-    0x18b0: "unknown",
-    0x18b1: "unknown",
-    0x18b2: "unknown",
-    0x18b3: "unknown",
-    0x18b4: "unknown",
+    0x0032: "unknown", # unit 51
+    0x0033: "SerialNo", # unit 51 1.1.96.1.0.255
+    0x0034: "unknown", # unit 51
+    0x0035: "unknown", # unit 51
+    0x03e9: "unknown", # unit 51
+    0x03f2: "unknown", # unit 51
+    0x0406: "unknown", # unit 51
+    0x0417: "unknown", # unit 53
+    0x043b: "unknown", # unit 51
+    0x0466: "CompleteMeterTypeNo", # unit 54 1.1.96.1.1.255
+    0x04c5: "unknown", # unit 0
+    0x04db: "unknown", # unit 0
+    0x0620: "unknown", # unit 54
+    0x062b: "unknown", # unit 0
+    0x178a: "unknown", # unit 51
+    0x178e: "unknown", # unit 54
+    0x178f: "unknown", # unit 54
+    0x180d: "unknown", # unit 0
+    0x180e: "unknown", # unit 51
+    0x1824: "unknown", # unit 51
+    0x1845: "unknown", # unit 54
+    0x1867: "IdentificationNumber", # unit 54 1.1.0.0.4.255
+    0x186c: "unknown", # unit 0
+    0x1874: "unknown", # unit 51
+    0x1875: "unknown", # unit 54
+    0x1876: "unknown", # unit 51
+    0x1880: "unknown", # unit 51
+    0x1885: "unknown", # unit 51
+    0x1886: "unknown", # unit 51
+    0x1887: "unknown", # unit 51
+    0x1888: "unknown", # unit 51
+    0x1889: "unknown", # unit 51
+    0x188a: "unknown", # unit 51
+    0x188b: "unknown", # unit 51
+    0x188c: "unknown", # unit 51
+    0x188d: "unknown", # unit 51
+    0x188e: "unknown", # unit 51
+    0x188f: "unknown", # unit 51
+    0x1890: "unknown", # unit 51
+    0x1893: "unknown", # unit 51
+    0x1894: "unknown", # unit 51
+    0x18a0: "unknown", # unit 51
+    0x18ad: "unknown", # unit 0
+    0x18ae: "unknown", # unit 0
+    0x18af: "unknown", # unit 0
+    0x18b0: "unknown", # unit 0
+    0x18b1: "unknown", # unit 0
+    0x18b2: "unknown", # unit 0
+    0x18b3: "unknown", # unit 0
+    0x18b4: "unknown", # unit 0
+}
+
+# to scan the entire address space
+kamstrup_scan_var = {
+    x: "unknown" for x in range(0x0001,0xffff)
 }
 
 #######################################################################
@@ -194,28 +200,43 @@ escapes = {
 class kamstrup(object):
 
     def __init__(self, serial_port = "/dev/ttyUSB0"):
-        logger.debug("\n\nStart\n")
+        # due to the way the file is written we cannot use the logging framework for the debug log
+        self.debug_fd = open("/tmp/kamstrup.log", "a")
+        self.debug_fd.write("\n\nStart\n")
         self.debug_id = None
 
+        # open the serial port
         self.ser = serial.Serial(
             port = serial_port,
             baudrate = 9600,
-            timeout = 1.0)
+            timeout = 1.0
+        )
 
-    def debug(self, dir, b):
-        for i in b:
-            if dir != self.debug_id:
-                if self.debug_id != None:
-                    logger.debug("\n")
-                logger.debug(dir + "\t")
+    def debug(self, direction, b):
+        """
+        Debug log some data on the wire
+        """
+        # are we still logging in the same direction?
+        if direction != self.debug_id:
+            if self.debug_id != None:
+                self.debug_fd.write("\n")
+                self.debug_fd.write(direction + "\t")
                 self.debug_id = dir
-            logger.debug(" %02x " % i)
+        # loop over the bytes and output each as HEX
+        for i in b:
+            self.debug_fd.write(" %02x " % i)
+        # make sure we can see the data right away
+        self.debug_fd.flush()
 
     def debug_msg(self, msg):
+        """
+        Debug logs a regular message (not data on the wire)
+        """
         if self.debug_id != None:
-            logger.debug("\n")
+            self.debug_fd.write("\n")
         self.debug_id = "Msg"
-        logger.debug("Msg\t" + msg)
+        self.debug_fd.write("Msg\t" + msg)
+        self.debug_fd.flush()
 
     def wr(self, b):
         b = bytearray(b)
@@ -287,27 +308,29 @@ class kamstrup(object):
         self.send(0x80, (0x3f, 0x10, 0x01, nbr >> 8, nbr & 0xff))
 
         b = self.recv()
+        logger.debug("received data %s" % b)
         if b == None:
+            logger.error("No data returned for register %s" % nbr)
             return (None, None)
 
         if b[0] != 0x3f or b[1] != 0x10:
+            # why must everything begin with 3f 10
             return (None, None)
 
         if b[2] != nbr >> 8 or b[3] != nbr & 0xff:
+            # what does this check
             return (None, None)
 
-        if b[4] in units:
-            u = units[b[4]]
-        else:
-            u = None
+        # Lookup unit type
+        unit = units.get(b[4], None)
 
-        # Decode the mantissa
+        # Decode the mantissa for the payload length
         x = 0
         for i in range(0,b[5]):
             x <<= 8
             x |= b[i + 7]
 
-        # Decode the exponent
+        # Decode the exponent for the payload length
         i = b[6] & 0x3f
         if b[6] & 0x40:
             i = -i
@@ -319,21 +342,24 @@ class kamstrup(object):
         if True:
             # Debug print
             s = ""
+            # 3f 10 and register address
             for i in b[:4]:
                 s += " %02x" % i
             s += " |"
+            # unit, mantissa, exponent
             for i in b[4:7]:
                 s += " %02x" % i
             s += " |"
             s2 = ""
+            # data
             for i in b[7:]:
                 s += " %02x" % i
                 s2 += " %02x" % i
             print(s, "=", x, units[b[4]])
-            if u=="ASCII":
+            if unit=="ASCII":
                 print(bytearray.fromhex(s2).decode('ascii'))
 
-        return (x, u)
+        return (x, unit)
 
 
 if __name__ == "__main__":
@@ -356,7 +382,7 @@ if __name__ == "__main__":
         help="Specify Kamstrup meter type.",
         metavar="METER_TYPE",
         default="162J",
-        choices=["162J","362J","382","684"],
+        choices=["162J","362J","382","684","scan"],
     )
     (options, args) = parser.parse_args()
 
@@ -372,6 +398,8 @@ if __name__ == "__main__":
         meter_type_var=kamstrup_382_var
     elif meter_type_str in "684":
         meter_type_var=kamstrup_684_var
+    elif meter_type_str in "scan":
+        meter_type_var=kamstrup_scan_var
     else:
         raise ValueError("ERROR: Meter type not defined!")
 
@@ -379,7 +407,11 @@ if __name__ == "__main__":
     print("%-25s"%"Time",time.strftime("%H:%M:%S"),"Time")
     print("%-25s"%"Date",datetime.date.today().strftime("%m/%d/%Y"),"Date")
     for i in meter_type_var:
-        x,u = foo.readvar(i)
+        try:
+            x, u = foo.readvar(i)
+        except IndexError:
+            # this register does not exist on this meter
+            continue
         mtv=meter_type_var[i]
         if 'I1' in mtv or 'I2' in mtv or 'I3' in mtv:
                 print(hex(i), "%-25s" % meter_type_var[i], x*1000, 'mA')
