@@ -16,8 +16,7 @@ import serial
 import math
 
 import logging
-logger=logging
-#logging.basicConfig(filename='/tmp/kamstrup.log',level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 from optparse import OptionParser
 
@@ -308,35 +307,37 @@ class kamstrup(object):
         self.send(0x80, (0x3f, 0x10, 0x01, nbr >> 8, nbr & 0xff))
 
         b = self.recv()
-        logger.debug("received data %s" % b)
         if b == None:
-            logger.error("No data returned for register %s" % nbr)
+            logging.error("No data returned for register %s" % nbr)
             return (None, None)
 
+        # why must everything begin with 3f 10 (byte 1 and 2)
         if b[0] != 0x3f or b[1] != 0x10:
-            # why must everything begin with 3f 10
+            logging.error("Data does not begin with 3f 10")
             return (None, None)
 
+        # check that the response if for the register we asked about (byte 3 and 4)
         if b[2] != nbr >> 8 or b[3] != nbr & 0xff:
-            # what does this check
+            logging.error("Response for register %s when asking for %s" % (nbr, b[2:3]))
             return (None, None)
 
-        # Lookup unit type
+        # Lookup unit type (byte 5)
         unit = units.get(b[4], None)
 
-        # Decode the mantissa for the payload length
+        # Decode the payload length (byte 6) and the payload (byte 8 and onwards)
         x = 0
         for i in range(0,b[5]):
             x <<= 8
             x |= b[i + 7]
 
-        # Decode the exponent for the payload length
+        # Decode the exponent/scaling factor (byte 7)
         i = b[6] & 0x3f
         if b[6] & 0x40:
             i = -i
         i = math.pow(10,i)
         if b[6] & 0x80:
             i = -i
+        # scale it
         x *= i
 
         if True:
@@ -346,7 +347,7 @@ class kamstrup(object):
             for i in b[:4]:
                 s += " %02x" % i
             s += " |"
-            # unit, mantissa, exponent
+            # unit, length, factor
             for i in b[4:7]:
                 s += " %02x" % i
             s += " |"
